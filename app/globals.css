@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+:root {
+  --background: #050608;
+  --foreground: #f3eee3;
+  --charcoal: #050608;
+  --shadow-blue: #1d2732;
+  --cold-blue: #708299;
+  --muted-gold: #b89a61;
+  --ember: #e07a33;
+  --mist: rgba(195, 208, 226, 0.08);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-charcoal: var(--charcoal);
+  --color-shadow-blue: var(--shadow-blue);
+  --color-cold-blue: var(--cold-blue);
+  --color-muted-gold: var(--muted-gold);
+  --color-ember: var(--ember);
+  --font-sans: var(--font-manrope);
+  --font-display: var(--font-cormorant);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: auto;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top, rgba(112, 130, 153, 0.14), transparent 34%),
+    radial-gradient(circle at 50% 70%, rgba(224, 122, 51, 0.1), transparent 28%),
+    linear-gradient(180deg, #08090b 0%, #050608 48%, #090b0d 100%);
+  color: var(--foreground);
+  font-family: var(--font-sans), sans-serif;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+}
+
+::selection {
+  background: rgba(184, 154, 97, 0.3);
+  color: #fff7ea;
+}
+
+.font-display {
+  font-family: var(--font-display), serif;
+}
+
+.grain-overlay {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+  background-size: 3px 3px, 3px 3px;
+  opacity: 0.08;
+}
+
+.text-balance {
+  text-wrap: balance;
+}
