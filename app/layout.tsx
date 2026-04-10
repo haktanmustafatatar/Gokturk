@@ -18,6 +18,26 @@ export const metadata: Metadata = {
   title: "Göktürk | Cinematic Myth Experience",
   description:
     "A scroll-driven cinematic landing page exploring Göktürk through atmosphere, fire, fog, and mythic presence.",
+  keywords: [
+    "Göktürk",
+    "cinematic landing page",
+    "Next.js",
+    "Three.js",
+    "React Three Fiber",
+    "myth-tech",
+  ],
+  openGraph: {
+    title: "Göktürk | Cinematic Myth Experience",
+    description:
+      "An immersive myth-tech landing page built as a premium cinematic sequence.",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Göktürk | Cinematic Myth Experience",
+    description:
+      "An immersive myth-tech landing page built as a premium cinematic sequence.",
+  },
 };
 
 export default function RootLayout({
