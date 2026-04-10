@@ -9,6 +9,7 @@ import { useCinematicStore } from "@/store/useCinematicStore";
 export const Atmosphere = () => {
   const hazeRef = useRef<Group>(null);
   const tier = useCinematicStore((state) => state.performanceTier);
+  const derived = useCinematicStore((state) => state.derived);
 
   const mistLayers = useMemo(
     () => [
@@ -20,20 +21,24 @@ export const Atmosphere = () => {
   );
 
   useFrame((state) => {
-    const progress = useCinematicStore.getState().progress;
-    const fire = useCinematicStore.getState().derived.fireIntensity;
+    const { progress } = useCinematicStore.getState();
+    const drift = derived.mistDriftEnabled
+      ? derived.motionIntensity * (1 - derived.stillness * 0.62)
+      : 0;
 
     if (hazeRef.current) {
-      hazeRef.current.rotation.y = state.clock.elapsedTime * 0.015;
-      hazeRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.12) * 0.18;
+      hazeRef.current.rotation.y = state.clock.elapsedTime * 0.01 * drift;
+      hazeRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.12) * 0.12 * drift;
     }
 
     hazeRef.current?.children.forEach((child, index) => {
       const mesh = child as Mesh;
       const material = mesh.material as MeshBasicMaterial;
 
-      mesh.position.x += Math.sin(state.clock.elapsedTime * 0.09 + index) * 0.0012;
-      material.opacity = MathUtils.lerp(0.03, 0.18, 1 - progress) + fire * 0.04;
+      mesh.position.x += Math.sin(state.clock.elapsedTime * 0.08 + index) * 0.0008 * drift;
+      material.opacity =
+        MathUtils.lerp(0.015, derived.mistOpacity, 1 - progress * 0.4) +
+        derived.fireIntensity * 0.03;
     });
   });
 
@@ -62,15 +67,17 @@ export const Atmosphere = () => {
         ))}
       </group>
 
-      <Sparkles
-        count={tier === "high" ? 110 : 65}
-        size={tier === "high" ? 2.1 : 1.5}
-        scale={[18, 7, 18]}
-        position={[0, 2.5, -2]}
-        speed={0.16}
-        opacity={0.24}
-        color="#cad2dc"
-      />
+      {derived.sparklesEnabled ? (
+        <Sparkles
+          count={tier === "high" ? 70 : 36}
+          size={tier === "high" ? 1.8 : 1.2}
+          scale={[18, 7, 18]}
+          position={[0, 2.5, -2]}
+          speed={0.1}
+          opacity={0.16}
+          color="#cad2dc"
+        />
+      ) : null}
     </group>
   );
 };

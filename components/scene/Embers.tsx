@@ -26,30 +26,34 @@ export const Embers = () => {
   const positions = useMemo(() => createEmberPositions(count), [count]);
 
   useFrame((state) => {
-    const embers = useCinematicStore.getState().derived.emberAmount;
+    const { emberAmount, motionIntensity, stillness, embersEnabled } =
+      useCinematicStore.getState().derived;
     const geometry = pointsRef.current?.geometry;
     const attribute = geometry?.getAttribute("position") as BufferAttribute | undefined;
+    const drift = embersEnabled ? motionIntensity * (1 - stillness * 0.58) : 0;
 
     if (!attribute) {
       return;
     }
 
-    for (let i = 0; i < attribute.count; i += 1) {
-      const y = attribute.getY(i) + 0.009 + embers * 0.024;
-      attribute.setY(i, y > 2.8 ? Math.random() * 0.4 : y);
-      attribute.setX(
-        i,
-        attribute.getX(i) + Math.sin(state.clock.elapsedTime * 0.4 + i) * 0.0008,
-      );
-    }
+    if (embersEnabled) {
+      for (let i = 0; i < attribute.count; i += 1) {
+        const y = attribute.getY(i) + 0.003 + emberAmount * 0.014 + drift * 0.008;
+        attribute.setY(i, y > 2.8 ? Math.random() * (0.28 + emberAmount * 0.32) : y);
+        attribute.setX(
+          i,
+          attribute.getX(i) + Math.sin(state.clock.elapsedTime * 0.34 + i) * 0.00045 * drift,
+        );
+      }
 
-    attribute.needsUpdate = true;
+      attribute.needsUpdate = true;
+    }
 
     if (pointsRef.current) {
       (pointsRef.current.material as PointsMaterial).opacity = MathUtils.lerp(
         0.02,
-        0.95,
-        embers,
+        embersEnabled ? 0.95 : 0.04,
+        emberAmount,
       );
     }
   });

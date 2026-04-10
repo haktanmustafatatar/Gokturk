@@ -80,7 +80,11 @@ export const VolumetricMist = () => {
     }
 
     const { progress, derived } = useCinematicStore.getState();
-    materialRef.current.uniforms.uTime.value = state.clock.elapsedTime;
+
+    if (derived.mistDriftEnabled) {
+      materialRef.current.uniforms.uTime.value = state.clock.elapsedTime;
+    }
+
     materialRef.current.uniforms.uProgress.value = progress;
     materialRef.current.uniforms.uFogIntensity.value = MathUtils.lerp(
       0.45,

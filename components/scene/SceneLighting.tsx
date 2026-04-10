@@ -7,15 +7,9 @@ import {
   Color,
   DirectionalLight,
   Fog,
-  MathUtils,
   PointLight,
 } from "three";
-import {
-  getFireStrength,
-  getFogDensity,
-  getSkyColor,
-  palette,
-} from "@/lib/three/palette";
+import { getSkyColor, palette } from "@/lib/three/palette";
 import { useCinematicStore } from "@/store/useCinematicStore";
 
 const fogColor = new Color();
@@ -26,10 +20,8 @@ export const SceneLighting = () => {
   const fireLightRef = useRef<PointLight>(null);
 
   useFrame((state, delta) => {
-    const progress = useCinematicStore.getState().progress;
-    const sky = getSkyColor(progress);
-    const density = getFogDensity(progress);
-    const fire = getFireStrength(progress);
+    const { derived } = useCinematicStore.getState();
+    const sky = getSkyColor(derived.skyReveal, derived.skyWarmth);
     const { scene } = state;
 
     scene.background = sky;
@@ -39,21 +31,21 @@ export const SceneLighting = () => {
 
       fogColor.copy(sky).lerp(palette.mist, 0.1);
       fog.color.lerp(fogColor, 1 - Math.exp(-delta * 2));
-      fog.near = MathUtils.lerp(8, 14, progress);
-      fog.far = MathUtils.lerp(28, 46, 1 - density);
+      fog.near = derived.fogNear;
+      fog.far = derived.fogFar;
     }
 
     if (ambientRef.current) {
-      ambientRef.current.intensity = MathUtils.lerp(0.4, 0.95, progress);
+      ambientRef.current.intensity = derived.ambientIntensity;
     }
 
     if (moonRef.current) {
-      moonRef.current.intensity = MathUtils.lerp(0.6, 1.1, progress);
-      moonRef.current.position.x = MathUtils.lerp(5, 2, progress);
+      moonRef.current.intensity = derived.moonIntensity;
+      moonRef.current.position.x = derived.moonX;
     }
 
     if (fireLightRef.current) {
-      fireLightRef.current.intensity = MathUtils.lerp(0.1, 4.2, fire);
+      fireLightRef.current.intensity = 0.1 + derived.fireIntensity * 4.2;
     }
   });
 

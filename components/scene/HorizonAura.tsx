@@ -9,13 +9,15 @@ export const HorizonAura = () => {
   const groupRef = useRef<Group>(null);
 
   useFrame((state) => {
-    const { fireIntensity, horizonGlow } = useCinematicStore.getState().derived;
+    const { fireIntensity, horizonGlow, motionIntensity, stillness, auraMotionEnabled } =
+      useCinematicStore.getState().derived;
+    const drift = auraMotionEnabled ? motionIntensity * (1 - stillness * 0.7) : 0;
 
     groupRef.current?.children.forEach((child, index) => {
       const mesh = child as Mesh;
       const material = mesh.material as MeshBasicMaterial;
 
-      mesh.rotation.z = Math.sin(state.clock.elapsedTime * 0.15 + index) * 0.02;
+      mesh.rotation.z = Math.sin(state.clock.elapsedTime * 0.13 + index) * 0.012 * drift;
       material.opacity = MathUtils.lerp(0.02, 0.2, horizonGlow) + fireIntensity * 0.08;
     });
   });

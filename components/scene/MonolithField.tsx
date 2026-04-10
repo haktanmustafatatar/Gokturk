@@ -27,18 +27,20 @@ export const MonolithField = () => {
   );
 
   useFrame((state) => {
-    const glow = useCinematicStore.getState().derived.horizonGlow;
+    const { horizonGlow, motionIntensity, stillness, monolithMotionEnabled } =
+      useCinematicStore.getState().derived;
+    const drift = monolithMotionEnabled ? motionIntensity * (1 - stillness * 0.72) : 0;
 
     if (!groupRef.current) {
       return;
     }
 
-    groupRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.08) * 0.06;
+    groupRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.08) * 0.035 * drift;
     groupRef.current.children.forEach((child, index) => {
-      child.rotation.y += Math.sin(state.clock.elapsedTime * 0.06 + index) * 0.0004;
-      child.position.y += Math.sin(state.clock.elapsedTime * 0.18 + index) * 0.0008;
+      child.rotation.y += Math.sin(state.clock.elapsedTime * 0.06 + index) * 0.00018 * drift;
+      child.position.y += Math.sin(state.clock.elapsedTime * 0.18 + index) * 0.00035 * drift;
       child.visible = tier !== "low" || index < 3;
-      child.scale.y = monoliths[index].scale[1] + MathUtils.lerp(0, 0.4, glow);
+      child.scale.y = monoliths[index].scale[1] + MathUtils.lerp(0, 0.4, horizonGlow);
     });
   });
 

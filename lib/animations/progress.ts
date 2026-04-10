@@ -1,3 +1,5 @@
+import { cinematicPhases } from "@/lib/animations/cinematicPhases";
+
 export const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
 
 export const lerp = (start: number, end: number, alpha: number) =>
@@ -21,9 +23,11 @@ export const smoothstep = (edge0: number, edge1: number, value: number) => {
 };
 
 export const phaseFromProgress = (progress: number) => {
-  if (progress < 0.16) return 0;
-  if (progress < 0.38) return 1;
-  if (progress < 0.58) return 2;
-  if (progress < 0.8) return 3;
-  return 4;
+  const index = cinematicPhases.findIndex(
+    (phase, phaseIndex) =>
+      progress >= phase.range[0] &&
+      (progress < phase.range[1] || phaseIndex === cinematicPhases.length - 1),
+  );
+
+  return index === -1 ? 0 : index;
 };

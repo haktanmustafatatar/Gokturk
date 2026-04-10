@@ -2,19 +2,53 @@ import { create } from "zustand";
 import {
   clamp01,
   phaseFromProgress,
-  smoothstep,
 } from "@/lib/animations/progress";
+import {
+  getActivePhase,
+  sampleBooleanSignal,
+  getPhaseBlend,
+  getPhaseProgress,
+  sampleSignal,
+  sampleTupleSignal,
+} from "@/lib/animations/cinematicPhases";
 import type { PerformanceTier } from "@/lib/three/performance";
+import type { Vec3Tuple } from "@/lib/animations/cinematicPhases";
 
 type CinematicDerived = {
+  phaseLabel: string;
+  phaseIntent: string;
+  phaseProgress: number;
+  phaseBlend: number;
   titleOpacity: number;
+  titleLift: number;
+  heroScale: number;
+  narrativeFocus: number;
   fogIntensity: number;
+  fogNear: number;
+  fogFar: number;
   emberAmount: number;
   fireIntensity: number;
   ctaReveal: number;
   structureReveal: number;
   veilOpacity: number;
   horizonGlow: number;
+  ambientIntensity: number;
+  moonIntensity: number;
+  moonX: number;
+  skyReveal: number;
+  skyWarmth: number;
+  mistOpacity: number;
+  motionIntensity: number;
+  stillness: number;
+  cameraDriftEnabled: boolean;
+  embersEnabled: boolean;
+  sparklesEnabled: boolean;
+  auraMotionEnabled: boolean;
+  monolithMotionEnabled: boolean;
+  mistDriftEnabled: boolean;
+  textMotionEnabled: boolean;
+  cameraPosition: Vec3Tuple;
+  cameraTarget: Vec3Tuple;
 };
 
 type DeviceProfile = {
@@ -38,17 +72,56 @@ type CinematicState = DeviceProfile & {
 };
 
 const createDerived = (progress: number, tier: PerformanceTier): CinematicDerived => {
-  const particleMultiplier = tier === "low" ? 0.45 : tier === "medium" ? 0.72 : 1;
+  const phase = getActivePhase(progress);
+  const particleMultiplier = tier === "low" ? 0.38 : tier === "medium" ? 0.7 : 1;
+  const motionMultiplier = tier === "low" ? 0.78 : tier === "medium" ? 0.9 : 1;
 
   return {
-    titleOpacity: 1 - smoothstep(0.12, 0.34, progress),
-    fogIntensity: 1 - smoothstep(0.22, 0.9, progress) * 0.82,
-    emberAmount: smoothstep(0.3, 0.68, progress) * particleMultiplier,
-    fireIntensity: smoothstep(0.34, 0.82, progress),
-    ctaReveal: smoothstep(0.78, 0.98, progress),
-    structureReveal: smoothstep(0.28, 0.56, progress),
-    veilOpacity: 1 - smoothstep(0.04, 0.24, progress),
-    horizonGlow: smoothstep(0.24, 0.88, progress),
+    phaseLabel: phase.label,
+    phaseIntent: phase.intent,
+    phaseProgress: getPhaseProgress(progress),
+    phaseBlend: getPhaseBlend(progress),
+    titleOpacity: sampleSignal(progress, (entry) => entry.signals.titleOpacity),
+    titleLift: sampleSignal(progress, (entry) => entry.signals.titleLift),
+    heroScale: sampleSignal(progress, (entry) => entry.signals.heroScale),
+    narrativeFocus: sampleSignal(progress, (entry) => entry.signals.narrativeFocus),
+    fogIntensity: sampleSignal(progress, (entry) => entry.signals.fogIntensity),
+    fogNear: sampleSignal(progress, (entry) => entry.signals.fogNear),
+    fogFar: sampleSignal(progress, (entry) => entry.signals.fogFar),
+    emberAmount:
+      sampleSignal(progress, (entry) => entry.signals.emberAmount) * particleMultiplier,
+    fireIntensity: sampleSignal(progress, (entry) => entry.signals.fireIntensity),
+    ctaReveal: sampleSignal(progress, (entry) => entry.signals.ctaReveal),
+    structureReveal: sampleSignal(progress, (entry) => entry.signals.structureReveal),
+    veilOpacity: sampleSignal(progress, (entry) => entry.signals.veilOpacity),
+    horizonGlow: sampleSignal(progress, (entry) => entry.signals.horizonGlow),
+    ambientIntensity: sampleSignal(progress, (entry) => entry.signals.ambientIntensity),
+    moonIntensity: sampleSignal(progress, (entry) => entry.signals.moonIntensity),
+    moonX: sampleSignal(progress, (entry) => entry.signals.moonX),
+    skyReveal: sampleSignal(progress, (entry) => entry.signals.skyReveal),
+    skyWarmth: sampleSignal(progress, (entry) => entry.signals.skyWarmth),
+    mistOpacity: sampleSignal(progress, (entry) => entry.signals.mistOpacity),
+    motionIntensity:
+      sampleSignal(progress, (entry) => entry.signals.motionIntensity) * motionMultiplier,
+    stillness: sampleSignal(progress, (entry) => entry.signals.stillness),
+    cameraDriftEnabled: sampleBooleanSignal(
+      progress,
+      (entry) => entry.signals.cameraDriftEnabled,
+    ),
+    embersEnabled: sampleBooleanSignal(progress, (entry) => entry.signals.embersEnabled),
+    sparklesEnabled: sampleBooleanSignal(progress, (entry) => entry.signals.sparklesEnabled),
+    auraMotionEnabled: sampleBooleanSignal(
+      progress,
+      (entry) => entry.signals.auraMotionEnabled,
+    ),
+    monolithMotionEnabled: sampleBooleanSignal(
+      progress,
+      (entry) => entry.signals.monolithMotionEnabled,
+    ),
+    mistDriftEnabled: sampleBooleanSignal(progress, (entry) => entry.signals.mistDriftEnabled),
+    textMotionEnabled: sampleBooleanSignal(progress, (entry) => entry.signals.textMotionEnabled),
+    cameraPosition: sampleTupleSignal(progress, (entry) => entry.camera.position),
+    cameraTarget: sampleTupleSignal(progress, (entry) => entry.camera.target),
   };
 };
 

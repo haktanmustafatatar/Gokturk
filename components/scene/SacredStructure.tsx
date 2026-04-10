@@ -15,6 +15,7 @@ export const SacredStructure = () => {
     const { derived, progress } = useCinematicStore.getState();
     const targetScale = MathUtils.lerp(0.74, 1.02, derived.structureReveal);
     const group = groupRef.current;
+    const drift = derived.motionIntensity * (1 - derived.stillness * 0.74);
 
     if (!group) {
       return;
@@ -23,7 +24,7 @@ export const SacredStructure = () => {
     scaleTarget.setScalar(targetScale);
     group.scale.lerp(scaleTarget, 1 - Math.exp(-delta * 2));
     group.position.y = MathUtils.lerp(-0.45, 0.02, derived.structureReveal);
-    group.rotation.y = Math.sin(state.clock.elapsedTime * 0.12) * 0.03 + progress * 0.12;
+    group.rotation.y = Math.sin(state.clock.elapsedTime * 0.12) * 0.018 * drift + progress * 0.1;
   });
 
   return (

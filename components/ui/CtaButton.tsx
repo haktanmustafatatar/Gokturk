@@ -6,7 +6,7 @@ type CtaButtonProps = {
 export const CtaButton = ({ children, href }: CtaButtonProps) => (
   <a
     href={href}
-    className="inline-flex min-h-12 items-center justify-center rounded-full border border-[#c49d63]/40 bg-[#0d1013]/70 px-6 text-xs font-semibold uppercase tracking-[0.34em] text-[#f5edda] transition duration-500 hover:border-[#df7f38]/70 hover:bg-[#15191d] hover:text-white"
+    className="inline-flex items-center justify-center border-b border-[#c49d63]/34 px-0 pb-1 text-[0.72rem] font-semibold uppercase tracking-[0.42em] text-[#f0e6d0] transition duration-500 hover:border-[#df7f38]/60 hover:text-white"
   >
     {children}
   </a>

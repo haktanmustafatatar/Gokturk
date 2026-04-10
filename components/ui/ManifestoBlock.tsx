@@ -7,6 +7,7 @@ type ManifestoBlockProps = {
   body: string;
   active: boolean;
   align?: "left" | "center" | "right";
+  emphasis?: number;
 };
 
 export const ManifestoBlock = ({
@@ -15,20 +16,29 @@ export const ManifestoBlock = ({
   body,
   active,
   align = "left",
+  emphasis = 1,
 }: ManifestoBlockProps) => (
   <div
     className={clsx(
-      "max-w-xl space-y-5 transition-all duration-700",
+      "max-w-xl space-y-5 transition-opacity duration-700",
       align === "center" && "mx-auto text-center",
       align === "right" && "ml-auto text-right",
-      active ? "translate-y-0 opacity-100" : "translate-y-8 opacity-[0.18]",
+      active ? "opacity-100" : "opacity-[0.18]",
     )}
   >
-    <SectionLabel>{label}</SectionLabel>
-    <h2 className="font-display text-4xl leading-[0.96] tracking-[0.08em] text-[#f4efe2] sm:text-5xl md:text-6xl">
+    <div style={{ opacity: 0.32 + emphasis * 0.5 }}>
+      <SectionLabel>{label}</SectionLabel>
+    </div>
+    <h2
+      className="font-display text-4xl leading-[0.96] tracking-[0.08em] text-[#f4efe2] sm:text-5xl md:text-6xl"
+      style={{ opacity: 0.68 + emphasis * 0.32 }}
+    >
       {title}
     </h2>
-    <p className="text-balance max-w-lg text-sm leading-7 tracking-[0.08em] text-[#d7d8d1]/72 sm:text-base">
+    <p
+      className="text-balance max-w-lg text-sm leading-7 tracking-[0.08em] text-[#d7d8d1]/72 sm:text-base"
+      style={{ opacity: 0.45 + emphasis * 0.42 }}
+    >
       {body}
     </p>
   </div>
